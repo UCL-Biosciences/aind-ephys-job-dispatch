@@ -75,6 +75,11 @@ timestamps_skip_group.add_argument(
     "static_skip_timestamps_check", nargs="?", help=timestamps_skip_help
 )
 
+no_timestamps_group = parser.add_mutually_exclusive_group()
+no_timestamps_help = "Use when no timestamps are provided (e.g. manually applied stimuli). Resets times without checking."
+no_timestamps_group.add_argument("--no-timestamps", action="store_true", help=no_timestamps_help)
+no_timestamps_group.add_argument("static_no_timestamps", nargs="?", help=no_timestamps_help)
+
 input_group = parser.add_mutually_exclusive_group()
 input_help = "Which 'loader' to use (spikeglx | openephys | nwb | spikeinterface | aind)"
 input_group.add_argument("--input", default=None, help=input_help, choices=["aind", "spikeglx", "openephys", "nwb", "spikeinterface"])
@@ -161,6 +166,7 @@ if __name__ == "__main__":
         DEBUG = params.get("debug", False)
         DEBUG_DURATION = float(params.get("debug_duration"))
         SKIP_TIMESTAMPS_CHECK = params.get("skip_timestamps_check", False)
+        NO_TIMESTAMPS = params.get("no-timestamps", False)
         MULTI_SESSION = params.get("multi_session", False)
         INPUT = params.get("input")
         NWB_FILES = params.get("nwb_files", None)
@@ -188,6 +194,10 @@ if __name__ == "__main__":
         SKIP_TIMESTAMPS_CHECK = (
             args.static_skip_timestamps_check.lower() == "true" if args.static_skip_timestamps_check
             else args.skip_timestamps_check
+        )
+        NO_TIMESTAMPS = (
+            args.static_no_timestamps.lower() == "true" if args.static_no_timestamps
+            else args.no_timestamps
         )
         MULTI_SESSION = (
             args.static_multi_session.lower() == "true" if args.static_multi_session
@@ -247,6 +257,7 @@ if __name__ == "__main__":
     logging.info(f"\tDEBUG: {DEBUG}")
     logging.info(f"\tDEBUG DURATION: {DEBUG_DURATION}")
     logging.info(f"\tSKIP TIMESTAMPS CHECK: {SKIP_TIMESTAMPS_CHECK}")
+    logging.info(f"\tNO_TIMESTAMPS: {NO_TIMESTAMPS}")
     logging.info(f"\tMULTI SESSION: {MULTI_SESSION}")
     logging.info(f"\tINPUT: {INPUT}")
     logging.info(f"\tMIN_RECORDING_DURATION: {MIN_RECORDING_DURATION}")
@@ -657,7 +668,10 @@ if __name__ == "__main__":
 
             # timestamps should be monotonically increasing, but we allow for small glitches
             skip_times = False
-            if not SKIP_TIMESTAMPS_CHECK:
+            if NO_TIMESTAMPS:
+                    logging.info(f"\t{recording_name}:\n\t\tNo timestamps provided, resetting times")
+                    skip_times = True
+            elif not SKIP_TIMESTAMPS_CHECK:
                 for segment_index in range(recording.get_num_segments()):
                     times = recording.get_times(segment_index=segment_index)
                     times_diff_ms = np.diff(times) * 1000

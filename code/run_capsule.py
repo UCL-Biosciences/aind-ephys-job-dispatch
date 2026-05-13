@@ -77,7 +77,7 @@ timestamps_skip_group.add_argument(
 
 no_timestamps_group = parser.add_mutually_exclusive_group()
 no_timestamps_help = "Use when no timestamps are provided (e.g. manually applied stimuli). Resets times without checking."
-no_timestamps_group.add_argument("--no-timestamps", action="store_true", help=no_timestamps_help)
+no_timestamps_group.add_argument("--no_timestamps", action="store_true", help=no_timestamps_help)
 no_timestamps_group.add_argument("static_no_timestamps", nargs="?", help=no_timestamps_help)
 
 input_group = parser.add_mutually_exclusive_group()
@@ -166,7 +166,7 @@ if __name__ == "__main__":
         DEBUG = params.get("debug", False)
         DEBUG_DURATION = float(params.get("debug_duration"))
         SKIP_TIMESTAMPS_CHECK = params.get("skip_timestamps_check", False)
-        NO_TIMESTAMPS = params.get("no-timestamps", False)
+        NO_TIMESTAMPS = params.get("no_timestamps", False)
         MULTI_SESSION = params.get("multi_session", False)
         INPUT = params.get("input")
         NWB_FILES = params.get("nwb_files", None)

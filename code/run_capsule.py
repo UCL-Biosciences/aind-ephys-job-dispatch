@@ -164,7 +164,7 @@ if __name__ == "__main__":
         SPLIT_SEGMENTS = params.get("split_segments", False)
         SPLIT_GROUPS = params.get("split_groups", True)
         DEBUG = params.get("debug", False)
-        DEBUG_DURATION = float(params.get("debug_duration"), 30)
+        DEBUG_DURATION = float(params.get("debug_duration", 30))
         SKIP_TIMESTAMPS_CHECK = params.get("skip_timestamps_check", False)
         NO_TIMESTAMPS = params.get("no_timestamps", False)
         MULTI_SESSION = params.get("multi_session", False)
